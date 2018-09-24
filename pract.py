@@ -18,6 +18,7 @@ func = args.func
 
 from scipy.ndimage import imread
 import numpy as np
+import random
 
 #symbols lib for derivatives all math stuff should be used according to this lib
 from sympy import * 
@@ -40,7 +41,7 @@ def open_img(name):
 ###### 10% of points are used
 ###### threshold defines the threshold of a point
 
-def get_points(graph, xdim, ydim, threshold = 70.0):
+def get_points(graph, xdim, ydim, threshold = 200.0):
     xx = [] 
     yy = []
     
@@ -98,7 +99,7 @@ def F(x, coeff, func):
 
 ####### gradient descend 
 
-def full_grad_4(X, Y, func, EPS  = 0.01, MAX_ITERATION = 500000, lam = 0.001):
+def full_grad_4(X, Y, func, EPS  = 0.01, MAX_ITERATION = 50000, lam = 0.001):
     
     grad=np.zeros(4)
     g0, g1, g2, g3 = symbols('g0 g1 g2 g3')
@@ -112,6 +113,21 @@ def full_grad_4(X, Y, func, EPS  = 0.01, MAX_ITERATION = 500000, lam = 0.001):
     L = 10
     k = 0
     c = [1.0, 1.0, 1.0, 1.0]
+
+    flag = False  
+    random.seed()
+    if func == 'sqrt':
+        while flag == False:
+            flag = True        
+            for i in range(X.shape[0]):
+                if c[0]*X[i]+c[1] < 0:
+                    flag = False
+            if not flag:
+              c[0] = random.uniform(-5.0, 5.0)
+              c[1] = random.uniform(-5.0, 5.0)
+            print(c)
+
+    print(c)
     while L > EPS and k < MAX_ITERATION:  
         grad = np.zeros(4)
         for i in range(X.shape[0]):
@@ -145,6 +161,7 @@ def full_grad_4(X, Y, func, EPS  = 0.01, MAX_ITERATION = 500000, lam = 0.001):
             else:
                 print([c])
             print('loss = ', L)
+
         k += 1
     print(k, ' iterations needed, ', L)
     return c
